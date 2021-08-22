@@ -34,8 +34,8 @@ for s, csv in enumerate(working_list):
 
     # recalculate similarity
     df_sub['similarity'] = df_sub['distractor_orientation'] - df_sub['correct_response']
-    df_sub.loc[df_sub['similarity']>=90, 'similarity'] = 180-df_sub.loc[df_sub['similarity']>=90, 'similarity']
-    df_sub.loc[df_sub['similarity']<=-90, 'similarity'] = -180-df_sub.loc[df_sub['similarity']<=-90, 'similarity']
+    df_sub.loc[df_sub['similarity']>=90, 'similarity'] = -1 * (180-df_sub.loc[df_sub['similarity']>=90, 'similarity'])
+    df_sub.loc[df_sub['similarity']<=-90, 'similarity'] = -1 * (-180-df_sub.loc[df_sub['similarity']<=-90, 'similarity'])
     ranges = np.arange(-90,91,18)
 
     #### here I am recalcuating the similarty range, negative values mean the diff between target and distractor is more towards clock wise, positve means it is more towards counter-clock direction (or is it the opposite!? you know what I mean)
@@ -45,18 +45,18 @@ for s, csv in enumerate(working_list):
     # calcuate precision (distance from target)
     #df_sub['similarity'] = ((df_sub['correct_response'] - df_sub['distractor_orientation'])+180) %180
     df_sub['precision'] = df_sub['response_ori'] - df_sub['correct_response']
-    df_sub.loc[df_sub['precision']>=90, 'precision'] = 180-df_sub.loc[df_sub['precision']>=90, 'precision']
-    df_sub.loc[df_sub['precision']<=-90, 'precision'] = -180-df_sub.loc[df_sub['precision']<=-90, 'precision']
-    df_sub['precision_normalized'] = df_sub['precision'] / abs(df_sub['similarity'])
+    df_sub.loc[df_sub['precision']>=90, 'precision'] = -1*(180-df_sub.loc[df_sub['precision']>=90, 'precision'])
+    df_sub.loc[df_sub['precision']<=-90, 'precision'] = -1 * (-180-df_sub.loc[df_sub['precision']<=-90, 'precision'])
+    df_sub['precision_normalized'] = df_sub['precision'] / df_sub['similarity']
 
     # distance from distractor, response closer or further away from distractor? 0 means closer to distractor
     df_sub['response_distance_from_distractor'] = df_sub['response_ori'] - df_sub['distractor_orientation']
-    df_sub.loc[df_sub['response_distance_from_distractor']>=90, 'response_distance_from_distractor'] = 180-df_sub.loc[df_sub['response_distance_from_distractor']>=90, 'response_distance_from_distractor']
-    df_sub.loc[df_sub['response_distance_from_distractor']<=-90, 'response_distance_from_distractor'] = -180-df_sub.loc[df_sub['response_distance_from_distractor']<=-90, 'response_distance_from_distractor']
-    df_sub['response_distance_from_distractor_normalized'] = df_sub['response_distance_from_distractor'] / abs(df_sub['similarity'])
+    df_sub.loc[df_sub['response_distance_from_distractor']>=90, 'response_distance_from_distractor'] = -1 * (180-df_sub.loc[df_sub['response_distance_from_distractor']>=90, 'response_distance_from_distractor'])
+    df_sub.loc[df_sub['response_distance_from_distractor']<=-90, 'response_distance_from_distractor'] = -1 * (-180-df_sub.loc[df_sub['response_distance_from_distractor']<=-90, 'response_distance_from_distractor'])
+    df_sub['response_distance_from_distractor_normalized'] = df_sub['response_distance_from_distractor'] / df_sub['similarity']
 
     #bias, closer to distractor or target? positve indicates closer towards target, negative means closer towards distractor
-    df_sub['bias'] =  (abs(df_sub['response_distance_from_distractor']) - abs(df_sub['precision'])) / abs(df_sub['similarity'])
+    df_sub['bias'] =  (abs(df_sub['response_distance_from_distractor']) - abs(df_sub['precision'])) / df_sub['similarity']
 
     #filter out the responses without pressing space. Concat across subjects
     df = df.append(df_sub.loc[df_sub['probe_resp.keys']=='space'])
@@ -76,6 +76,13 @@ plt.show()
 gdf = df.groupby(['SUBJECT_ID','similarity_range', 'Condition']).mean().reset_index()
 
 sns.scatterplot(x='similarity_range', y='precision', data = gdf, hue='Condition')
+plt.show()
+
+sns.scatterplot(x='similarity_range', y='precision_normalized', data = gdf, hue='Condition')
+plt.show()
+
+
+sns.pointplot(x='similarity_range', y='precision', data = gdf, hue='Condition')
 plt.show()
 
 sns.pointplot(x='similarity_range', y='precision_normalized', data = gdf, hue='Condition')
