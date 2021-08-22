@@ -8,19 +8,7 @@ from statsmodels.stats.weightstats import ttest_ind
 from statsmodels.stats.multicomp import MultiComparison
 from scipy.stats import ttest_1samp, ttest_rel
 
-working_list = glob.glob('*.csv')
-
-df_dict={'prolific_id':[],
-'sub_numbers':[],
-'precision':[],
-'cue':[],
-'similarity_range':[],
-'similarity':[],
-'distance':[],
-'bias':[],
-'bias_standard':[]}
-
-sub=1
+working_list = glob.glob('prolific_data_0714/*.csv')
 df = pd.DataFrame()
 for s, csv in enumerate(working_list):
 
@@ -101,3 +89,16 @@ plt.show()
 
 sns.pointplot(x='similarity_range', y='bias', data = gdf, hue='Condition')
 plt.show()
+
+sns.scatterplot(x='distractor_orientation', y='response_distance_from_distractor', data = df.loc[df.Condition=='neutral'], hue='Condition')
+plt.show()
+
+# distribution
+sns.kdeplot(x='precision', data = gdf, hue='Condition')
+plt.show()
+
+
+
+
+
+#end of line
