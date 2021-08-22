@@ -84,7 +84,6 @@ plt.show()
 sns.scatterplot(x='similarity', y='precision', data = df.loc[df.Condition=='valid'], hue='Condition')
 plt.show()
 
-
 # for plotting with point estimates, make sure the dof is at the level of subject not individual trials. So calcuate mean within each subject before plotting
 gdf = df.groupby(['SUBJECT_ID','similarity_range', 'Condition']).mean().reset_index()
 
